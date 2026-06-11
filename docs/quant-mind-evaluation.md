@@ -1,96 +1,85 @@
-# QuantMind Evaluation
+# QuantMind: What It Is, What We Found, and What We'd Do With It
 
-Hands-on evaluation of [LLMQuant/quant-mind](https://github.com/LLMQuant/quant-mind)
-(v0.2.0, master @ June 2026): cloned, installed, test suite run, and the
-extraction pipeline exercised against real inputs.
+A plain-language review of [LLMQuant/quant-mind](https://github.com/LLMQuant/quant-mind).
+We downloaded it, installed it, ran its tests, and tried out its pipeline
+on real content.
 
-## What it is
+## What QuantMind is, in one paragraph
 
-QuantMind is a Python framework that turns unstructured financial content
-(papers, news, blogs) into typed, structured knowledge objects using LLMs.
-The pipeline is:
+It's a tool that reads documents for you. You point it at a research
+paper, a news article, or a web page, and it uses an AI model to read the
+whole thing and fill out a structured "summary card": title, authors,
+topic, a section-by-section breakdown, key findings, limitations. Instead
+of a 30-page PDF, you end up with a clean, organized record a program can
+search and work with.
 
-```
-fetch (arXiv / DOI / HTTP / local file)
-  → format (PDF→text via PyMuPDF, HTML→markdown via trafilatura)
-    → flow (OpenAI Agents SDK agent with output_type=Paper)
-      → typed Pydantic knowledge object (Paper, News, Earnings, Factor, Thesis)
-```
+## What we tested and what happened
 
-Plus a `magic.resolve_magic_input()` helper that turns a free-form natural
-language request into typed flow inputs, and `batch_run()` for concurrent
-fan-out with error skipping and progress callbacks.
+- **Installing it**: worked with no problems.
+- **Its own test suite**: all 233 tests pass. The code is well organized
+  and well maintained — this is a healthy project, not abandonware.
+- **Downloading and reading content**: we fed it a real web page and a
+  real PDF. It correctly pulled out clean, readable text from both.
+- **The AI reading step**: we could **not** test this part here, because
+  it needs an OpenAI account key and this workspace doesn't have one. We
+  also couldn't test its arXiv (research paper site) downloader, because
+  this workspace's network rules block that site — that's a limit of our
+  sandbox, not a bug in their code.
 
-- ~935 stars, MIT license, paper accepted at the NeurIPS 2025 GenAI in
-  Finance workshop.
-- Python ≥3.10, managed with `uv`. Key deps: `openai-agents`, `litellm`,
-  `pymupdf`, `trafilatura`, `arxiv`, `pydantic`.
+## The catch
 
-## What I verified hands-on
+QuantMind's marketing describes two halves:
 
-| Step | Result |
-|---|---|
-| `uv pip install -e .` | Clean install (note: pyproject pins a Tsinghua PyPI mirror as default index; needed `--default-index https://pypi.org/simple` override) |
-| Test suite | **233/233 passed**, 89% coverage, enforced 75% floor, runs in ~7s (LLM calls mocked via respx) |
-| `fetch_url()` + `html_to_markdown()` | Works on a live page: 381 KB HTML → 8.7 KB clean markdown |
-| `read_local_file()` + `pdf_to_markdown()` | Works: PDF bytes → extracted text |
-| `fetch_arxiv()` | Code is sound but could not be exercised here — this sandbox's network policy blocks arxiv.org (HTTP 403 from both the API and PDF endpoints, confirmed with curl) |
-| `paper_flow()` (LLM extraction) | Not run — requires an `OPENAI_API_KEY`, which is not available in this environment |
+1. **Reading documents and producing summary cards** — this half is real,
+   tested, and works.
+2. **Storing those cards in a searchable knowledge base you can ask
+   questions of** — this half **does not exist yet**. It's described in
+   their planning documents, but the code hasn't been written. Today,
+   QuantMind hands you the summary card and then it's up to you to save
+   it somewhere.
 
-## Code quality assessment
+Also worth knowing: the project is in the middle of a big internal rework,
+so its interfaces may change underneath us, and it's built around OpenAI's
+models (so running it costs OpenAI API credits — roughly fractions of a
+cent per document with the cheap model they default to).
 
-Genuinely good for a sub-1.0 open-source project:
+## The recommendation, and what happens if we do it
 
-- Clean layering with import-linter contracts enforcing it
-  (`preprocess` does fetch/format only, no LLM calls; `flows` orchestrates;
-  `knowledge` holds Pydantic schemas).
-- Modern toolchain: ruff, basedpyright, pytest with coverage floor,
-  pre-commit, conventional commits.
-- Thoughtful API: frozen dataclasses at the fetch boundary, discriminated
-  unions for flow inputs, three documented customization layers
-  (config → kwargs → fork the flow file).
-- Async throughout, with CPU-bound work (PDF parsing) pushed to threads.
+**Recommendation: use QuantMind as the "reader," and build the "filing
+cabinet" (the database) ourselves in this repo.**
 
-## Gaps and caveats
+Concretely, if we go this route, here is what we would build and what it
+would do once finished:
 
-1. **No storage layer exists yet.** The `docs/design/en/storage.md` design
-   doc describes a `quantmind.storage` module (LocalStorage, indexes,
-   embeddings) that is **not in the codebase** — it was removed/deferred
-   during the ongoing OpenAI Agents SDK migration. The `mind/` memory +
-   store layer is scheduled for their PR6/PR7. Today the framework hands
-   you a Pydantic object and persistence is your problem.
-2. **Retrieval is aspirational.** The README's Stage 2 (embeddings, RAG,
-   DeepResearch, knowledge graph) does not exist in code. What ships today
-   is Stage 1 extraction only.
-3. **OpenAI-coupled.** Flows are built on the OpenAI Agents SDK; `litellm`
-   is a dependency so other providers may be routable, but the documented
-   path is `gpt-4o-mini` with an OpenAI key.
-4. **Mid-migration.** v0.2.0, API surface still moving (their issue #71
-   tracks the migration). Expect breaking changes.
-5. PDF extraction is plain-text quality (PyMuPDF); higher-fidelity engines
-   (marker-pdf, llama-parse) are planned but not wired in.
+1. **You give it a list of sources** — paper links, article URLs, or
+   files on disk.
+2. **QuantMind reads each one** — downloads it, extracts the text, and
+   has the AI produce a structured summary card for each document. It can
+   process many documents at once and skip over failures.
+3. **Our code saves every card into a database we own** — likely a simple
+   SQLite or Postgres database living in this project. Nothing is lost
+   when the program exits; the collection grows every time we run it.
+4. **You can then search the collection** — "show me everything we've
+   ingested about X," "list papers from 2025 with their key findings" —
+   without re-reading any original document. If we add a vector index
+   later, you could also ask natural-language questions against it.
 
-## Verdict and recommended next steps
+In short: the end result is a **self-updating library**. Feed it
+documents, and it maintains a searchable, structured database of what
+they say.
 
-The extraction layer is real, well-built, and tested — but the "knowledge
-base" half (storage, embeddings, retrieval) is design-doc-only today. If
-our goal is a populated, queryable database, QuantMind currently gives us
-a high-quality front half of the pipeline and nothing for the back half.
+What it would take from us:
 
-Options, in rough order of preference:
+- **Build**: the database schema and the save/search code (the part
+  QuantMind doesn't have). Their own design document is a good blueprint,
+  so we're not starting from a blank page. This is days of work, not
+  weeks.
+- **Run**: an OpenAI API key, and (if we want arXiv papers specifically)
+  network access to arxiv.org from wherever this runs.
+- **Maintain**: pin QuantMind to a fixed version so their ongoing rework
+  doesn't break us, and review before upgrading.
 
-1. **Use it as the ingestion library, own the storage.** Depend on
-   `quantmind` for fetch/parse/LLM-extraction, and build our own
-   persistence (e.g. SQLite/Postgres + a vector index) around the Pydantic
-   `Paper`/`News` objects it emits. Their storage design doc is a usable
-   blueprint. Risk: API churn until their migration lands; pin a commit.
-2. **Wait for PR6/PR7** (their `mind/` store layer) before committing, and
-   prototype against the extraction layer in the meantime.
-3. **Borrow the architecture, not the code** — if our domain isn't
-   finance, the prompts/schemas are finance-specific and we'd be rewriting
-   the valuable part anyway; the fetch/format layer is generic and small
-   enough to reimplement.
-
-To run the full flow end-to-end ourselves we need: an OpenAI API key and
-network access to arxiv.org (or use `HttpUrl`/`LocalFilePath` inputs
-instead of arXiv IDs).
+The main alternative: if our documents aren't about finance, QuantMind's
+AI prompts and card formats are finance-flavored, so we'd be rewriting
+the most valuable part anyway — in that case it's better to copy their
+design ideas and write our own small version.
