@@ -51,6 +51,28 @@ python -m monitor config.yaml
 Leave it running. You'll see one log line per check; on a drop it alerts once
 (with a cooldown so it won't spam), then re-arms when the item sells out again.
 
+**Live reload:** `config.yaml` is re-read while the monitor runs. When a SKU
+gets posted on X, paste it into the file and save — it's being watched within
+~2 seconds, no restart. A broken save (bad YAML) keeps the previous watchlist
+running.
+
+**Test your alerts before a real drop:**
+
+```bat
+python -m monitor --test
+```
+
+fires a fake in-stock alert. If you don't hear a sound, fix Windows
+notification settings now (see below), not during a drop.
+
+## Make sure a drop can actually wake you
+
+- Turn **off** Focus Assist / Do Not Disturb for the Pokemon Monitor app, or
+  whitelist it — a suppressed toast is a missed drop.
+- Set Windows **power settings** so the PC never sleeps while monitoring
+  (display off is fine; sleep stops the monitor).
+- Keep volume up. The alert uses a looping alarm sound, not the default ding.
+
 ## Honest limitations
 
 - Retailer page shapes and API keys change. If a retailer starts logging

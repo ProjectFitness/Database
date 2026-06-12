@@ -9,6 +9,9 @@
 # Intervals are SECONDS between checks. Defaults are deliberately polite so you
 # don't get blocked. Lower them at your own risk — too low and Walmart/PC will
 # start throwing 403s and you'll end up SLOWER, not faster.
+#
+# LIVE RELOAD: this file is re-read while the monitor runs. When a SKU drops on
+# X, paste it here and save — it's being watched within ~2 seconds, no restart.
 
 zip: "10001"          # used by Target to check your local store + shipping
 cooldown: 60          # seconds to suppress repeat alerts (debounces page flicker)
