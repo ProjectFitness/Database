@@ -99,6 +99,20 @@ week, and hour. After a few weeks this is your own dataset: open it in Excel
 and pivot on day/hour to see exactly when your local Target's vendor scans in
 stock and when online drops hit — your store's real schedule, not rumors.
 
+## Market prices (know whether to hold or flip)
+
+Once a day the monitor snapshots TCGplayer market prices (via the free
+tcgcsv.com mirror — no API key) for the sealed items listed under `tcg_prices`
+in config.yaml, appending to `prices.csv`. You can also run one on demand:
+
+```bat
+python -m monitor.prices
+```
+
+Pair `prices.csv` with `events.csv` and you have the full picture: what you can
+buy at retail, and what the market pays for it — the spread that decides
+whether a purchase is worth it before you click buy.
+
 ## Honest limitations
 
 - Retailer page shapes and API keys change. If a retailer starts logging

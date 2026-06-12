@@ -23,7 +23,10 @@ from . import config as config_mod
 from .checkers import REGISTRY
 from .checkers.base import Stock
 from .notifier import notify, set_ntfy_topic
+from .prices import snapshot
 from .state import StateTracker
+
+PRICE_SNAPSHOT_SECONDS = 24 * 3600  # tcgcsv updates once a day
 
 JITTER_FRAC = 0.35           # +/- 35% of the interval
 MAX_BACKOFF_MULTIPLIER = 8   # cap when repeatedly blocked
@@ -97,8 +100,27 @@ async def _watch_loop(client, checker, watch: dict, state: StateTracker, key: st
         await asyncio.sleep(max(delay, 1.0))
 
 
+async def _price_loop(client, config_path: Path) -> None:
+    """Daily market-price snapshot for the sealed items in config (tcg_prices).
+    Reads config fresh each cycle so edits apply without restart. Failures are
+    logged and retried in an hour — price history is nice-to-have, never worth
+    crashing the stock watchers over."""
+    while True:
+        delay = PRICE_SNAPSHOT_SECONDS
+        try:
+            _, settings = config_mod.load(config_path)
+            wrote = await snapshot(client, settings["tcg_prices"])
+            if not wrote and not settings["tcg_prices"]:
+                delay = 3600  # nothing configured yet; check again hourly
+        except Exception as exc:
+            _log("prices", "daily snapshot", f"failed ({exc}) — retrying in 1h")
+            delay = 3600
+        await asyncio.sleep(delay)
+
+
 async def run(client, config_path: Path) -> None:
     state = StateTracker()
+    asyncio.create_task(_price_loop(client, config_path))
     tasks: dict[str, asyncio.Task] = {}
     snapshots: dict[str, dict] = {}
     crash_times: dict[str, float] = {}

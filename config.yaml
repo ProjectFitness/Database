@@ -26,6 +26,18 @@ cooldown: 60          # seconds to suppress repeat alerts (debounces page flicke
 # Leave empty to disable.
 ntfy_topic: ""
 
+# Daily TCGplayer market-price snapshots (via tcgcsv.com, free) for the sealed
+# items you're buying — appended to prices.csv so you can see whether hype is
+# rising or dying before deciding hold vs. flip. "set" matches TCGplayer set
+# names, "match" filters product names within the set.
+tcg_prices:
+  - set: "Prismatic Evolutions"
+    match: ["Elite Trainer Box", "Booster Bundle", "Super Premium"]
+  - set: "Destined Rivals"
+    match: ["Elite Trainer Box", "Booster Bundle"]
+  - set: "Mega Evolution"
+    match: ["Elite Trainer Box", "Booster Bundle"]
+
 watches:
   # ----- Target: Prismatic Evolutions (the hardest pulls) -----
   - retailer: target
