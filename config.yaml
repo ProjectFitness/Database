@@ -20,6 +20,12 @@
 zip: "75063"
 cooldown: 60          # seconds to suppress repeat alerts (debounces page flicker)
 
+# Phone push (optional, free): install the "ntfy" app, subscribe to a topic,
+# and put the SAME topic here. Make it long and unguessable (it acts like a
+# password, e.g. "dd-pokemon-x7k2m9qz") — anyone who knows it sees your alerts.
+# Leave empty to disable.
+ntfy_topic: ""
+
 watches:
   # ----- Target: Prismatic Evolutions (the hardest pulls) -----
   - retailer: target

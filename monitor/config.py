@@ -6,16 +6,19 @@ from pathlib import Path
 import yaml
 
 
-def load(config_path: Path) -> tuple[list[dict], int]:
+def load(config_path: Path) -> tuple[list[dict], dict]:
     with config_path.open() as fh:
         cfg = yaml.safe_load(fh) or {}
 
     zip_code = str(cfg.get("zip", ""))
-    cooldown = int(cfg.get("cooldown", 60))
+    settings = {
+        "cooldown": int(cfg.get("cooldown", 60)),
+        "ntfy_topic": str(cfg.get("ntfy_topic", "") or ""),
+    }
     watches = cfg.get("watches", []) or []
     for w in watches:
         w["_zip"] = zip_code  # Target needs it; harmless elsewhere
-    return watches, cooldown
+    return watches, settings
 
 
 def watch_key(watch: dict) -> str:

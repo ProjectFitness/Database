@@ -65,6 +65,25 @@ python -m monitor --test
 fires a fake in-stock alert. If you don't hear a sound, fix Windows
 notification settings now (see below), not during a drop.
 
+## Phone push (so being away from the PC doesn't cost you a drop)
+
+1. Install the free **ntfy** app (iPhone/Android), no account needed.
+2. In the app, subscribe to a topic with a long, unguessable name
+   (it works like a password — e.g. `dd-pokemon-x7k2m9qz`).
+3. Put the same name in `config.yaml` as `ntfy_topic` and save.
+
+Drops now hit your phone as urgent pushes with a tap-to-open product link, on
+top of the PC toast. `python -m monitor --test` verifies the whole chain.
+
+## Keep it alive 24/7 (a dead monitor catches nothing)
+
+- Run `run_monitor.bat` instead of the bare command — it relaunches the
+  monitor automatically if it ever crashes.
+- To survive reboots: Task Scheduler -> Create Task -> trigger "At log on" ->
+  action: start `run_monitor.bat` in this folder.
+- Inside the monitor, a watch loop that hits an unexpected error is restarted
+  automatically and logged — one flaky product can't silently stop its watch.
+
 ## Make sure a drop can actually wake you
 
 - Turn **off** Focus Assist / Do Not Disturb for the Pokemon Monitor app, or

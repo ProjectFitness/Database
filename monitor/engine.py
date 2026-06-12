@@ -15,18 +15,20 @@ from __future__ import annotations
 import asyncio
 import csv
 import random
+import time
 from datetime import datetime
 from pathlib import Path
 
 from . import config as config_mod
 from .checkers import REGISTRY
 from .checkers.base import Stock
-from .notifier import notify
+from .notifier import notify, set_ntfy_topic
 from .state import StateTracker
 
 JITTER_FRAC = 0.35           # +/- 35% of the interval
 MAX_BACKOFF_MULTIPLIER = 8   # cap when repeatedly blocked
 CONFIG_POLL_SECONDS = 2.0    # how often we look for config.yaml changes
+CRASH_HOLDDOWN_SECONDS = 30  # wait before restarting a crashed watch loop
 
 
 def _log(retailer: str, name: str, detail: str) -> None:
@@ -99,6 +101,7 @@ async def run(client, config_path: Path) -> None:
     state = StateTracker()
     tasks: dict[str, asyncio.Task] = {}
     snapshots: dict[str, dict] = {}
+    crash_times: dict[str, float] = {}
     last_mtime: float | None = None
 
     while True:
@@ -111,13 +114,14 @@ async def run(client, config_path: Path) -> None:
             first_load = last_mtime is None
             last_mtime = mtime
             try:
-                watches, cooldown = config_mod.load(config_path)
+                watches, settings = config_mod.load(config_path)
             except Exception as exc:
                 print(f"config reload failed ({exc}) — keeping previous watchlist")
                 watches = None
 
             if watches is not None:
-                state.cooldown = cooldown
+                state.cooldown = settings["cooldown"]
+                set_ntfy_topic(settings["ntfy_topic"])
                 desired: dict[str, tuple[dict, type]] = {}
                 for w in watches:
                     checker_cls = REGISTRY.get(w.get("retailer", ""))
@@ -145,5 +149,28 @@ async def run(client, config_path: Path) -> None:
                     print(f"-- config reloaded: {len(tasks)} watch(es) active --")
                 elif not tasks:
                     print("No valid watches configured. Edit config.yaml — it reloads live.")
+
+        # Resurrect any watch loop that died on an unexpected exception — a
+        # parser bug on one product must never silently stop its watch. The
+        # hold-down keeps a permanently broken watch from restart-spamming.
+        for key, task in list(tasks.items()):
+            if task.done() and not task.cancelled():
+                w = snapshots.get(key)
+                if w is None:
+                    tasks.pop(key)
+                    continue
+                crashed_at = crash_times.get(key)
+                if crashed_at is None:
+                    crash_times[key] = time.monotonic()
+                    _log(
+                        w["retailer"],
+                        w.get("name", key),
+                        f"watch crashed ({task.exception()!r}) — restarting in {CRASH_HOLDDOWN_SECONDS}s",
+                    )
+                elif time.monotonic() - crashed_at >= CRASH_HOLDDOWN_SECONDS:
+                    crash_times.pop(key, None)
+                    tasks[key] = asyncio.create_task(
+                        _watch_loop(client, REGISTRY[w["retailer"]](), w, state, key)
+                    )
 
         await asyncio.sleep(CONFIG_POLL_SECONDS)

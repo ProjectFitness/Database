@@ -17,8 +17,9 @@ from pathlib import Path
 
 import httpx
 
+from .config import load
 from .engine import run
-from .notifier import notify
+from .notifier import notify, set_ntfy_topic
 
 USER_AGENT = (
     "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 "
@@ -29,6 +30,12 @@ USER_AGENT = (
 async def main() -> None:
     args = [a for a in sys.argv[1:] if a != "--test"]
     if "--test" in sys.argv[1:]:
+        test_config = Path(args[0]) if args else Path("config.yaml")
+        if test_config.exists():
+            _, settings = load(test_config)
+            set_ntfy_topic(settings["ntfy_topic"])
+            if settings["ntfy_topic"]:
+                print("ntfy_topic configured — the test should also hit your phone.")
         print("Firing test alert — you should hear a sound, see a toast, and get a browser tab.")
         notify(
             title="TEST: Pokemon Monitor is working",
@@ -36,6 +43,7 @@ async def main() -> None:
             url="https://www.target.com",
             open_browser=True,
         )
+        await asyncio.sleep(3)  # let the background phone push finish before exit
         return
 
     config_path = Path(args[0]) if args else Path("config.yaml")
