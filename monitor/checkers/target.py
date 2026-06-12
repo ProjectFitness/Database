@@ -1,8 +1,13 @@
 """Target availability via the RedSky aggregations API (read-only JSON).
 
 This is the reliable one. RedSky is the same backend target.com's own product
-pages call for fulfillment info. We read shipping availability and (if a store is
-resolved for the zip) in-store availability.
+pages call for fulfillment info. We check BOTH shipping availability and
+in-store/pickup availability at the store nearest the configured zip.
+
+Store resolution: on first check we call RedSky's nearby-stores endpoint once to
+turn the zip into a store id + name, cache it, and include it in every
+fulfillment check from then on. If the lookup fails we fall back to zip-only
+(shipping) checks and retry the lookup on the next poll.
 
 NOTE: RedSky requires a `key` query param — a public web key target.com ships in
 its own frontend. These rotate occasionally. If Target checks start returning
@@ -17,16 +22,46 @@ REDSKY_KEY = "9f36aeafbe60771e321a7cc95a78140772ab3e96"  # public web key; rotat
 FULFILLMENT_URL = (
     "https://redsky.target.com/redsky_aggregations/v1/web/pdp_fulfillment_v1"
 )
+NEARBY_STORES_URL = (
+    "https://redsky.target.com/redsky_aggregations/v1/web/nearby_stores_v1"
+)
+STORE_SEARCH_MILES = 25
 
 
 class TargetChecker(Checker):
     retailer = "target"
     auto_open = True
 
+    def __init__(self) -> None:
+        # (store_id, store_name) for the store nearest the zip; None = not yet
+        # resolved (retry next poll), empty id = lookup gave nothing usable.
+        self._store: tuple[str, str] | None = None
+
+    async def _resolve_store(self, client, zip_code: str) -> None:
+        if self._store is not None or not zip_code:
+            return
+        params = {
+            "key": REDSKY_KEY,
+            "place": zip_code,
+            "limit": "1",
+            "within": str(STORE_SEARCH_MILES),
+            "channel": "WEB",
+        }
+        try:
+            resp = await client.get(NEARBY_STORES_URL, params=params, timeout=10)
+            stores = resp.json()["data"]["nearby_stores"]["stores"]
+            store = stores[0]
+            self._store = (str(store["store_id"]), store.get("location_name", "local store"))
+        except Exception:
+            self._store = None  # retry on next poll; zip-only check still works
+
     async def check(self, client, watch: dict) -> Result:
         tcin = str(watch["tcin"])
         zip_code = str(watch.get("_zip", ""))
         product_url = f"https://www.target.com/p/-/A-{tcin}"
+
+        await self._resolve_store(client, zip_code)
+        store_id, store_name = self._store if self._store else ("", "")
 
         params = {
             "key": REDSKY_KEY,
@@ -34,8 +69,9 @@ class TargetChecker(Checker):
             "is_bot": "false",
             "zip": zip_code,
             "state": "",
-            "pricing_store_id": "",
-            "has_pricing_store_id": "false",
+            "store_id": store_id,
+            "pricing_store_id": store_id,
+            "has_pricing_store_id": "true" if store_id else "false",
         }
         try:
             resp = await client.get(FULFILLMENT_URL, params=params, timeout=10)
@@ -50,16 +86,27 @@ class TargetChecker(Checker):
         except (KeyError, ValueError) as exc:
             return Result(Stock.UNKNOWN, product_url, f"unexpected payload: {exc}")
 
-        shipping = fulfillment.get("shipping_options", {})
-        ship_status = shipping.get("availability_status", "")
-        store_options = fulfillment.get("store_options", [])
-        store_in_stock = any(
-            so.get("order_pickup", {}).get("availability_status") == "IN_STOCK"
-            or so.get("in_store_only", {}).get("availability_status") == "IN_STOCK"
-            for so in store_options
+        ship_in_stock = (
+            fulfillment.get("shipping_options", {}).get("availability_status")
+            == "IN_STOCK"
         )
+        pickup_stores = []
+        for so in fulfillment.get("store_options", []):
+            available = (
+                so.get("order_pickup", {}).get("availability_status") == "IN_STOCK"
+                or so.get("in_store_only", {}).get("availability_status") == "IN_STOCK"
+            )
+            if available:
+                pickup_stores.append(so.get("location_name") or store_name or "store")
 
-        if ship_status == "IN_STOCK" or store_in_stock:
-            where = "ship" if ship_status == "IN_STOCK" else "store"
-            return Result(Stock.IN, product_url, f"in stock ({where})")
-        return Result(Stock.OUT, product_url, f"ship={ship_status or 'n/a'}")
+        if ship_in_stock or pickup_stores:
+            where = []
+            if ship_in_stock:
+                where.append("ship")
+            if pickup_stores:
+                where.append("pickup @ " + ", ".join(pickup_stores[:3]))
+            return Result(Stock.IN, product_url, "in stock: " + "; ".join(where))
+
+        status = fulfillment.get("shipping_options", {}).get("availability_status")
+        store_note = f", {store_name}: out" if store_id else ""
+        return Result(Stock.OUT, product_url, f"ship={status or 'n/a'}{store_note}")

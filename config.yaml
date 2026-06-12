@@ -1,33 +1,102 @@
-# Pokemon TCG personal stock monitor — your watchlist.
+# Pokemon TCG personal stock monitor — watchlist for zip 75063 (Irving, TX).
 #
-# How to fill this in:
-#   Target          -> the TCIN is the number at the end of the product URL:
-#                       https://www.target.com/p/.../-/A-89542109  ->  tcin: "89542109"
-#   Walmart         -> paste the full product URL.
-#   Pokemon Center  -> paste the full product URL. (notify-only by design)
+# All Target TCINs below are FIRST-PARTY Target listings (8-digit TCINs),
+# verified June 2026. 10-digit TCINs are Target Plus marketplace resellers at
+# scalper prices — never add those.
 #
-# Intervals are SECONDS between checks. Defaults are deliberately polite so you
-# don't get blocked. Lower them at your own risk — too low and Walmart/PC will
-# start throwing 403s and you'll end up SLOWER, not faster.
+# Walmart: some listings are marketplace resellers too. When a Walmart alert
+# fires, glance at "Sold and shipped by Walmart" on the page before buying.
+#
+# Target checks include shipping AND in-store pickup at your nearest store
+# (resolved automatically from the zip) — alerts say "ship" or "pickup @ <store>".
+#
+# Intervals are SECONDS between checks (with random jitter). Target's API is
+# tolerant; Walmart and Pokemon Center are heavily bot-protected, so theirs stay
+# slower. Lowering them gets you 403-blocked and slower, not faster.
 #
 # LIVE RELOAD: this file is re-read while the monitor runs. When a SKU drops on
 # X, paste it here and save — it's being watched within ~2 seconds, no restart.
 
-zip: "10001"          # used by Target to check your local store + shipping
+zip: "75063"
 cooldown: 60          # seconds to suppress repeat alerts (debounces page flicker)
 
 watches:
+  # ----- Target: Prismatic Evolutions (the hardest pulls) -----
   - retailer: target
-    name: "Example — Pokemon TCG Booster Box"
-    tcin: "89542109"
+    name: "Prismatic Evolutions ETB"
+    tcin: "93954435"
+    interval: 20
+
+  - retailer: target
+    name: "Prismatic Evolutions Booster Bundle"
+    tcin: "93954446"
+    interval: 20
+
+  - retailer: target
+    name: "Prismatic Evolutions Super-Premium Collection"
+    tcin: "94300072"
     interval: 25
 
+  - retailer: target
+    name: "Prismatic Evolutions Surprise Box"
+    tcin: "94336414"
+    interval: 25
+
+  # ----- Target: Destined Rivals -----
+  - retailer: target
+    name: "Destined Rivals ETB"
+    tcin: "94300069"
+    interval: 20
+
+  - retailer: target
+    name: "Destined Rivals Booster Bundle"
+    tcin: "94300067"
+    interval: 25
+
+  # ----- Target: Mega Evolution — Chaos Rising (current set) -----
+  - retailer: target
+    name: "Chaos Rising ETB"
+    tcin: "95267143"
+    interval: 20
+
+  - retailer: target
+    name: "Chaos Rising Booster Bundle"
+    tcin: "95298172"
+    interval: 25
+
+  - retailer: target
+    name: "Chaos Rising Three-Booster Blister"
+    tcin: "95298174"
+    interval: 30
+
+  - retailer: target
+    name: "Mega Evolution Perfect Order ETB"
+    tcin: "95230445"
+    interval: 25
+
+  # ----- Walmart (verify 'Sold and shipped by Walmart' when an alert fires) -----
   - retailer: walmart
-    name: "Example — Pokemon TCG ETB"
-    url: "https://www.walmart.com/ip/REPLACE_ME"
-    interval: 40
+    name: "Destined Rivals ETB (Walmart)"
+    url: "https://www.walmart.com/ip/Pokemon-TCG-Scarlet-Violet-Destined-Rivals-Elite-Trainer-Box-ETB/16728861909"
+    interval: 45
+
+  - retailer: walmart
+    name: "Mega Evolution ETB (Walmart)"
+    url: "https://www.walmart.com/ip/Scarlet-Violet-Mega-Evolution-Elite-Trainer-Box/17328862239"
+    interval: 45
+
+  - retailer: walmart
+    name: "Mega Evolution Booster Bundle (Walmart)"
+    url: "https://www.walmart.com/ip/Scarlet-Violet-Mega-Evolution-Booster-Bundle/17344505131"
+    interval: 50
+
+  # ----- Pokemon Center (notify-only by design; you click, no auto-open) -----
+  - retailer: pokemoncenter
+    name: "Chaos Rising PC-Exclusive ETB"
+    url: "https://www.pokemoncenter.com/product/10-10399-112/pokemon-tcg-mega-evolution-chaos-rising-pokemon-center-elite-trainer-box"
+    interval: 90
 
   - retailer: pokemoncenter
-    name: "Example — Pokemon Center Exclusive"
-    url: "https://www.pokemoncenter.com/product/REPLACE_ME"
+    name: "Chaos Rising Booster Display (36)"
+    url: "https://www.pokemoncenter.com/product/10-10407-119/pokemon-tcg-mega-evolution-chaos-rising-booster-display-box-36-packs"
     interval: 90
