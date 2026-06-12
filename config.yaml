@@ -1,0 +1,30 @@
+# Pokemon TCG personal stock monitor — your watchlist.
+#
+# How to fill this in:
+#   Target          -> the TCIN is the number at the end of the product URL:
+#                       https://www.target.com/p/.../-/A-89542109  ->  tcin: "89542109"
+#   Walmart         -> paste the full product URL.
+#   Pokemon Center  -> paste the full product URL. (notify-only by design)
+#
+# Intervals are SECONDS between checks. Defaults are deliberately polite so you
+# don't get blocked. Lower them at your own risk — too low and Walmart/PC will
+# start throwing 403s and you'll end up SLOWER, not faster.
+
+zip: "10001"          # used by Target to check your local store + shipping
+cooldown: 60          # seconds to suppress repeat alerts (debounces page flicker)
+
+watches:
+  - retailer: target
+    name: "Example — Pokemon TCG Booster Box"
+    tcin: "89542109"
+    interval: 25
+
+  - retailer: walmart
+    name: "Example — Pokemon TCG ETB"
+    url: "https://www.walmart.com/ip/REPLACE_ME"
+    interval: 40
+
+  - retailer: pokemoncenter
+    name: "Example — Pokemon Center Exclusive"
+    url: "https://www.pokemoncenter.com/product/REPLACE_ME"
+    interval: 90
