@@ -19,6 +19,9 @@ class StateTracker:
         self._last_known: dict[str, Stock] = {}
         self._last_alert: dict[str, float] = {}
 
+    def last_known(self, key: str) -> Stock | None:
+        return self._last_known.get(key)
+
     def should_alert(self, key: str, stock: Stock) -> bool:
         prev = self._last_known.get(key)
 

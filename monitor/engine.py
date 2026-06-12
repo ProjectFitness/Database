@@ -13,6 +13,7 @@ reload fails to parse (e.g. saved mid-edit), the previous watchlist keeps runnin
 from __future__ import annotations
 
 import asyncio
+import csv
 import random
 from datetime import datetime
 from pathlib import Path
@@ -33,6 +34,30 @@ def _log(retailer: str, name: str, detail: str) -> None:
     print(f"{ts}  [{retailer:<13}] {name[:40]:<40} {detail}")
 
 
+EVENTS_CSV = Path("events.csv")
+
+
+def _record_event(retailer: str, name: str, event: str, detail: str) -> None:
+    """Append a stock transition to events.csv — over weeks this becomes your
+    own per-store restock-pattern dataset (day of week + hour included so the
+    pattern falls out of a pivot table)."""
+    now = datetime.now().astimezone()
+    new_file = not EVENTS_CSV.exists()
+    with EVENTS_CSV.open("a", newline="") as fh:
+        writer = csv.writer(fh)
+        if new_file:
+            writer.writerow(["timestamp", "day_of_week", "hour", "retailer", "product", "event", "detail"])
+        writer.writerow([
+            now.isoformat(timespec="seconds"),
+            now.strftime("%A"),
+            now.hour,
+            retailer,
+            name,
+            event,
+            detail,
+        ])
+
+
 async def _watch_loop(client, checker, watch: dict, state: StateTracker, key: str) -> None:
     base = float(watch.get("interval", 30))
     consecutive_unknown = 0
@@ -45,6 +70,15 @@ async def _watch_loop(client, checker, watch: dict, state: StateTracker, key: st
             consecutive_unknown = min(consecutive_unknown + 1, 6)
         else:
             consecutive_unknown = 0
+
+        prev = state.last_known(key)
+        if result.stock is not Stock.UNKNOWN and prev is not None and result.stock is not prev:
+            _record_event(
+                checker.retailer,
+                watch["name"],
+                "restock" if result.stock is Stock.IN else "sellout",
+                result.detail,
+            )
 
         if state.should_alert(key, result.stock):
             _log(checker.retailer, watch["name"], ">>> IN STOCK — alerting")

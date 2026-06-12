@@ -73,6 +73,13 @@ notification settings now (see below), not during a drop.
   (display off is fine; sleep stops the monitor).
 - Keep volume up. The alert uses a looping alarm sound, not the default ding.
 
+## Event log (learn your store's pattern)
+
+Every restock and sellout is appended to `events.csv` with timestamp, day of
+week, and hour. After a few weeks this is your own dataset: open it in Excel
+and pivot on day/hour to see exactly when your local Target's vendor scans in
+stock and when online drops hit — your store's real schedule, not rumors.
+
 ## Honest limitations
 
 - Retailer page shapes and API keys change. If a retailer starts logging
