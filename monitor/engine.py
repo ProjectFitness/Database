@@ -14,6 +14,8 @@ from __future__ import annotations
 
 import asyncio
 import csv
+import json
+import os
 import random
 import time
 from datetime import datetime
@@ -40,6 +42,37 @@ def _log(retailer: str, name: str, detail: str) -> None:
 
 
 EVENTS_CSV = Path("events.csv")
+STATUS_FILE = Path("status.json")
+
+# Latest result per watch, read by the dashboard. Updated in-process after each
+# check; written atomically so a reader never sees a half-written file.
+_status: dict[str, dict] = {}
+
+
+def _write_status() -> None:
+    payload = {
+        "updated": datetime.now().astimezone().isoformat(timespec="seconds"),
+        "watches": list(_status.values()),
+    }
+    tmp = STATUS_FILE.with_suffix(".json.tmp")
+    try:
+        tmp.write_text(json.dumps(payload, indent=2))
+        os.replace(tmp, STATUS_FILE)
+    except OSError:
+        pass  # status is best-effort; never let it disturb monitoring
+
+
+def _update_status(key: str, retailer: str, name: str, result) -> None:
+    _status[key] = {
+        "key": key,
+        "retailer": retailer,
+        "name": name,
+        "stock": result.stock.value,
+        "detail": result.detail,
+        "url": result.url,
+        "last_checked": datetime.now().astimezone().isoformat(timespec="seconds"),
+    }
+    _write_status()
 
 
 def _record_event(retailer: str, name: str, event: str, detail: str) -> None:
@@ -70,6 +103,7 @@ async def _watch_loop(client, checker, watch: dict, state: StateTracker, key: st
     while True:
         result = await checker.check(client, watch)
         _log(checker.retailer, watch["name"], result.detail)
+        _update_status(key, checker.retailer, watch["name"], result)
 
         if result.stock is Stock.UNKNOWN:
             consecutive_unknown = min(consecutive_unknown + 1, 6)
@@ -157,7 +191,9 @@ async def run(client, config_path: Path) -> None:
                         tasks.pop(key).cancel()
                         snapshots.pop(key, None)
                         if key not in desired:
+                            _status.pop(key, None)
                             _log(key.split(":", 1)[0], key, "removed from watchlist")
+                _write_status()
 
                 for key, (w, checker_cls) in desired.items():
                     if key not in tasks:

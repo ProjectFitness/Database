@@ -1,0 +1,10 @@
+# Runtime data — written by the monitor on your machine, not source.
+status.json
+status.json.tmp
+events.csv
+prices.csv
+
+# Python
+.venv/
+__pycache__/
+*.pyc
