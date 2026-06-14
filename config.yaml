@@ -26,6 +26,14 @@ cooldown: 60          # seconds to suppress repeat alerts (debounces page flicke
 # Leave empty to disable.
 ntfy_topic: ""
 
+# Target RedSky API key. The built-in default is a public key Target has likely
+# killed (symptom: every Target line logs HTTP 410/404). Paste your OWN fresh
+# key here: open any target.com product page -> F12 DevTools -> Network tab ->
+# type "redsky" in the filter -> click a request -> copy the "key=" value out of
+# its URL. Saving this file applies it live (no restart). Leave empty to use the
+# built-in default.
+redsky_key: ""
+
 # Daily TCGplayer market-price snapshots (via tcgcsv.com, free) for the sealed
 # items you're buying — appended to prices.csv so you can see whether hype is
 # rising or dying before deciding hold vs. flip. "set" matches TCGplayer set

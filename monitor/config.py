@@ -14,6 +14,7 @@ def load(config_path: Path) -> tuple[list[dict], dict]:
     settings = {
         "cooldown": int(cfg.get("cooldown", 60)),
         "ntfy_topic": str(cfg.get("ntfy_topic", "") or ""),
+        "redsky_key": str(cfg.get("redsky_key", "") or ""),
         "tcg_prices": cfg.get("tcg_prices", []) or [],
     }
     watches = cfg.get("watches", []) or []

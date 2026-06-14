@@ -24,6 +24,7 @@ from pathlib import Path
 from . import config as config_mod
 from .checkers import REGISTRY
 from .checkers.base import Stock
+from .checkers.target import set_redsky_key
 from .notifier import notify, set_ntfy_topic
 from .prices import snapshot
 from .state import StateTracker
@@ -178,6 +179,7 @@ async def run(client, config_path: Path) -> None:
             if watches is not None:
                 state.cooldown = settings["cooldown"]
                 set_ntfy_topic(settings["ntfy_topic"])
+                set_redsky_key(settings["redsky_key"])
                 desired: dict[str, tuple[dict, type]] = {}
                 for w in watches:
                     checker_cls = REGISTRY.get(w.get("retailer", ""))

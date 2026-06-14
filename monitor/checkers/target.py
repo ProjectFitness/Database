@@ -10,15 +10,26 @@ fulfillment check from then on. If the lookup fails we fall back to zip-only
 (shipping) checks and retry the lookup on the next poll.
 
 NOTE: RedSky requires a `key` query param — a public web key target.com ships in
-its own frontend. These rotate occasionally. If Target checks start returning
-UNKNOWN with a 401/403, grab the current key: open a Target product page, open
-DevTools -> Network, filter "redsky", and copy the `key=` value into REDSKY_KEY.
+its own frontend. Target rotates these and actively kills keys that get passed
+around scraper tutorials (a dead/blocked key returns HTTP 410 or 404). Use YOUR
+OWN fresh key: set `redsky_key` in config.yaml. To grab it: open any Target
+product page, DevTools -> Network, filter "redsky", click a request, and copy
+the `key=` value from its URL. No restart needed — config reloads live.
 """
 from __future__ import annotations
 
 from .base import Checker, Result, Stock
 
-REDSKY_KEY = "9f36aeafbe60771e321a7cc95a78140772ab3e96"  # public web key; rotates — see module docstring
+# Fallback default; override via `redsky_key` in config.yaml with your own.
+REDSKY_KEY = "9f36aeafbe60771e321a7cc95a78140772ab3e96"
+
+
+def set_redsky_key(key: str) -> None:
+    global REDSKY_KEY
+    if key:
+        REDSKY_KEY = key.strip()
+
+
 FULFILLMENT_URL = (
     "https://redsky.target.com/redsky_aggregations/v1/web/pdp_fulfillment_v1"
 )
@@ -78,6 +89,12 @@ class TargetChecker(Checker):
         except Exception as exc:  # network error -> UNKNOWN, never a false drop
             return Result(Stock.UNKNOWN, product_url, f"request error: {exc}")
 
+        if resp.status_code in (404, 410):
+            return Result(
+                Stock.UNKNOWN,
+                product_url,
+                f"HTTP {resp.status_code} — RedSky key dead/blocked; set a fresh redsky_key in config.yaml",
+            )
         if resp.status_code != 200:
             return Result(Stock.UNKNOWN, product_url, f"HTTP {resp.status_code}")
 
