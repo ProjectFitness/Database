@@ -1,0 +1,327 @@
+<title>One Headline, Twelve Emails</title>
+<style>
+  :root {
+    --paper: #FAFBFC;
+    --ink: #16233A;
+    --ink-soft: #4A5A74;
+    --accent: #1F4396;
+    --rule: #C9D2E0;
+    --panel: #EFF3F9;
+    --flag: #9A5B0B;
+    --flag-bg: #FBF3E4;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --paper: #0E1522;
+      --ink: #E6EBF4;
+      --ink-soft: #9AA9C0;
+      --accent: #8FB0F5;
+      --rule: #2C3A52;
+      --panel: #17202F;
+      --flag: #E3A857;
+      --flag-bg: #241C0E;
+    }
+  }
+  :root[data-theme="dark"] {
+    --paper: #0E1522;
+    --ink: #E6EBF4;
+    --ink-soft: #9AA9C0;
+    --accent: #8FB0F5;
+    --rule: #2C3A52;
+    --panel: #17202F;
+    --flag: #E3A857;
+    --flag-bg: #241C0E;
+  }
+  :root[data-theme="light"] {
+    --paper: #FAFBFC;
+    --ink: #16233A;
+    --ink-soft: #4A5A74;
+    --accent: #1F4396;
+    --rule: #C9D2E0;
+    --panel: #EFF3F9;
+    --flag: #9A5B0B;
+    --flag-bg: #FBF3E4;
+  }
+
+  body {
+    background: var(--paper);
+    color: var(--ink);
+    font-family: -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    font-size: 13px;
+    line-height: 1.45;
+    margin: 0;
+  }
+  .sheet {
+    max-width: 62rem;
+    margin: 0 auto;
+    padding: 2rem 2rem 2.5rem;
+  }
+  .serif { font-family: Charter, "Bitstream Charter", Georgia, Cambria, serif; }
+
+  header {
+    border-bottom: 3px solid var(--ink);
+    padding-bottom: 0.9rem;
+    margin-bottom: 1.4rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    gap: 1rem;
+    flex-wrap: wrap;
+  }
+  .eyebrow {
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    font-size: 0.72rem;
+    font-weight: 600;
+    color: var(--accent);
+    margin: 0 0 0.35rem;
+  }
+  h1 {
+    font-size: 1.9rem;
+    line-height: 1.1;
+    margin: 0;
+    font-weight: 700;
+    text-wrap: balance;
+  }
+  .meta {
+    text-align: right;
+    color: var(--ink-soft);
+    font-size: 0.78rem;
+    line-height: 1.5;
+  }
+  .meta strong { color: var(--ink); }
+
+  .facnote {
+    background: var(--flag-bg);
+    color: var(--flag);
+    border: 1px solid currentColor;
+    border-radius: 2px;
+    font-size: 0.78rem;
+    padding: 0.45rem 0.7rem;
+    margin: 0 0 1.3rem;
+  }
+
+  .cols {
+    display: grid;
+    grid-template-columns: 1.15fr 1fr;
+    gap: 2rem;
+  }
+  @media (max-width: 46rem) { .cols { grid-template-columns: 1fr; } }
+
+  h2 {
+    font-size: 0.78rem;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    font-weight: 700;
+    color: var(--ink);
+    border-bottom: 1px solid var(--ink);
+    padding-bottom: 0.3rem;
+    margin: 1.4rem 0 0.6rem;
+  }
+  section > h2:first-child { margin-top: 0; }
+
+  .event {
+    font-size: 1.02rem;
+    line-height: 1.5;
+    margin: 0 0 0.4rem;
+  }
+  .event strong { color: var(--accent); }
+
+  .facts { overflow-x: auto; }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.8rem;
+    font-variant-numeric: tabular-nums;
+  }
+  td {
+    border-bottom: 1px solid var(--rule);
+    padding: 0.4rem 0.5rem 0.4rem 0;
+    vertical-align: top;
+  }
+  td.n { color: var(--ink-soft); width: 1.4rem; padding-right: 0.4rem; }
+  td.tier {
+    width: 2.4rem;
+    text-align: right;
+    white-space: nowrap;
+    font-weight: 700;
+    color: var(--accent);
+  }
+
+  .foil {
+    font-size: 0.8rem;
+    color: var(--ink-soft);
+    margin-top: 0.6rem;
+  }
+  .foil strong { color: var(--ink); }
+
+  .task {
+    background: var(--panel);
+    border-left: 3px solid var(--accent);
+    padding: 0.8rem 1rem;
+    font-size: 0.85rem;
+    margin: 0;
+  }
+  .task strong { color: var(--accent); }
+
+  ol.qs {
+    list-style: none;
+    counter-reset: q;
+    margin: 0;
+    padding: 0;
+  }
+  ol.qs li {
+    counter-increment: q;
+    padding: 0.55rem 0 0.65rem;
+    border-bottom: 1px solid var(--rule);
+    font-size: 0.83rem;
+  }
+  ol.qs li::before {
+    content: "Q" counter(q);
+    font-family: Charter, Georgia, serif;
+    font-weight: 700;
+    color: var(--accent);
+    margin-right: 0.5rem;
+  }
+  ol.qs .hint {
+    display: block;
+    color: var(--ink-soft);
+    font-size: 0.76rem;
+    margin: 0.15rem 0 0.45rem;
+  }
+  .line {
+    border-bottom: 1px dotted var(--ink-soft);
+    height: 1.15rem;
+  }
+
+  ul.checks {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    font-size: 0.82rem;
+  }
+  ul.checks li {
+    padding: 0.42rem 0 0.42rem 1.6rem;
+    border-bottom: 1px solid var(--rule);
+    position: relative;
+  }
+  ul.checks li::before {
+    content: "";
+    position: absolute;
+    left: 0.1rem;
+    top: 0.55rem;
+    width: 0.75rem;
+    height: 0.75rem;
+    border: 1.5px solid var(--ink-soft);
+    border-radius: 1px;
+  }
+  .checks strong { color: var(--accent); }
+
+  footer {
+    margin-top: 1.6rem;
+    border-top: 3px solid var(--ink);
+    padding-top: 0.7rem;
+    display: flex;
+    gap: 2rem;
+    flex-wrap: wrap;
+    font-size: 0.76rem;
+    color: var(--ink-soft);
+  }
+  footer div { flex: 1 1 16rem; }
+  footer strong { color: var(--ink); }
+
+  @media print {
+    :root {
+      --paper: #FFFFFF; --ink: #16233A; --ink-soft: #4A5A74;
+      --accent: #1F4396; --rule: #C9D2E0; --panel: #EFF3F9;
+      --flag: #9A5B0B; --flag-bg: #FBF3E4;
+    }
+    body { font-size: 11px; }
+    .sheet { max-width: none; padding: 0; }
+    .cols { gap: 1.4rem; }
+    header { padding-bottom: 0.6rem; margin-bottom: 0.9rem; }
+    .facnote { margin-bottom: 0.9rem; }
+    a { color: inherit; text-decoration: none; }
+  }
+</style>
+
+<div class="sheet">
+  <header>
+    <div>
+      <p class="eyebrow">Prospecting Workshop · Rep Handout</p>
+      <h1 class="serif">One Headline, Twelve Emails</h1>
+    </div>
+    <div class="meta">
+      <strong>Scenario as of 7/14/26</strong><br>
+      Facilitator re-verifies before session<br>
+      Distribute after Round 1, not before
+    </div>
+  </header>
+
+  <p class="facnote">Standard for everything on this page: every claim carries source, date, and tier. Anything you cannot tier gets [VERIFY] or gets cut.</p>
+
+  <div class="cols">
+    <section>
+      <h2>The Event</h2>
+      <p class="event serif">On <strong>May 21, 2026</strong>, AvalonBay Communities and Equity Residential announced an all-stock <strong>merger of equals</strong>, creating one of the largest multifamily REIT platforms in the country.</p>
+
+      <h2>Fact Base</h2>
+      <div class="facts">
+        <table>
+          <tr><td class="n">1</td><td>All-stock merger of equals announced (joint release / 8-K, 5/21/26)</td><td class="tier">T1</td></tr>
+          <tr><td class="n">2</td><td>Approx. $52B equity market cap, $69B enterprise value combined</td><td class="tier">T1</td></tr>
+          <tr><td class="n">3</td><td>$175M gross synergies stated; $125M net after tax reassessments</td><td class="tier">T1</td></tr>
+          <tr><td class="n">4</td><td>Benjamin Schall (AVB) to lead; Mark Parrell (EQR CEO 8 yrs, 27 at company) retires at close</td><td class="tier">T1</td></tr>
+          <tr><td class="n">5</td><td>180,000+ apartments combined; roughly 95 percent regional market overlap</td><td class="tier">T1</td></tr>
+          <tr><td class="n">6</td><td>Stated plans: AI, automation, centralized services for margin expansion; 60M pieces of customer feedback data to mine (investor call, CEO remarks)</td><td class="tier">T2</td></tr>
+          <tr><td class="n">7</td><td>Dual HQ (Arlington, VA and Chicago); new company name at closing; close expected H2 2026</td><td class="tier">T1</td></tr>
+          <tr><td class="n">8</td><td>$4.4B development under way: about 10,800 apartments across 32 communities</td><td class="tier">T1</td></tr>
+        </table>
+      </div>
+      <p class="foil"><strong>Swap-test foil:</strong> Public Storage agreed 3/16/26 to acquire National Storage Affiliates, all-stock, about $10.5B. If a sentence in your draft still works with those names in it, rewrite the sentence.</p>
+
+      <h2>Your Task</h2>
+      <p class="task"><strong>Draft an outreach email to Benjamin Schall</strong>, CEO of the combined company, positioning Gartner IT Symposium attendance and Gartner advisory. <strong>75 to 100 words. No em dashes.</strong> Fill in the worksheet first; attach it to your draft. Every claim maps to a fact row or carries [VERIFY].</p>
+    </section>
+
+    <section>
+      <h2>Five Questions · Answer Before Drafting</h2>
+      <ol class="qs">
+        <li>What <strong>happened</strong> in the last 12 months?
+          <span class="hint">An event with a date, not a description of the company.</span>
+          <div class="line"></div>
+        </li>
+        <li>What does it <strong>operationally force</strong>?
+          <span class="hint">"...which means their technology function is likely dealing with..."</span>
+          <div class="line"></div>
+        </li>
+        <li><strong>Hard or routine</strong> for this org?
+          <span class="hint">Have they integrated at this scale before? What did you check?</span>
+          <div class="line"></div>
+        </li>
+        <li>What is different about <strong>this instance</strong> for <strong>this company</strong>?
+          <span class="hint">True of any merging REIT? Then it does not count. No answer? Change angle.</span>
+          <div class="line"></div>
+        </li>
+        <li>What <strong>number or commitment</strong> did leadership state publicly that this puts at risk?
+          <div class="line"></div>
+        </li>
+      </ol>
+
+      <h2>Before You Send</h2>
+      <ul class="checks">
+        <li><strong>Swap test:</strong> substituted Public Storage / NSA into every sentence; rewrote survivors</li>
+        <li><strong>Hygiene A:</strong> every Gartner or Symposium content claim is verified or carries [VERIFY]</li>
+        <li><strong>Hygiene B:</strong> no routing asks; I looked up the tech leader or wrote [CONFIRM: name] with evidence I tried</li>
+        <li><strong>Citations:</strong> every factual claim maps to a fact row number or carries [VERIFY]</li>
+        <li><strong>Format:</strong> word count 75 to 100; zero em dashes</li>
+      </ul>
+    </section>
+  </div>
+
+  <footer>
+    <div><strong>Tier 1</strong> Company first-party: press releases, filings, investor decks, earnings calls.</div>
+    <div><strong>Tier 2</strong> The executive's own public statements: interviews, keynotes, posts.</div>
+    <div><strong>Tier 3</strong> Your inference built on Tier 1, framed as observation, never asserted as fact.</div>
+  </footer>
+</div>
