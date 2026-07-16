@@ -50,10 +50,14 @@ uploaded at https://gmgn.ai/ai to mint an API key; the private half signs reques
   "private key" universally means *wallet* key. The docs themselves have to disclaim the confusion.
   Predictable failure mode: a user pastes their actual wallet private key into a config file that
   tooling, logs, and LLM context windows all touch. Should be `GMGN_SIGNING_KEY`.
-- **C3. No server-side spend limits.** There is no documented way to scope an API key (read-only
-  vs. trading, per-key spend caps, chain restrictions, IP allowlists). A compromised signing key =
-  unlimited trading authority until manually revoked. All damage control is pushed client-side —
-  hence our `config/guardrails.example.json`.
+- **C3. No server-side spend limits.** *(Revised after seeing the live dashboard, 2026-07-16.)*
+  Better than the public docs suggest: the API Management dashboard supports per-key restrictions —
+  a **Trading Disabled** toggle and **trusted-IP allowlisting**, with up to 3 keys per account. Use
+  both: keep a read-only key for all data work and a separate, IP-locked trading key if trading is
+  ever enabled. Remaining gaps: none of this is in the public docs (you find it by logging in), and
+  there are still **no per-key spend caps, chain restrictions, or trade-size limits** — a
+  compromised trading-enabled signing key is unlimited authority until revoked. Client-side
+  guardrails (`config/guardrails.example.json`) remain necessary.
 - **C4. No sandbox or paper-trading mode.** The official guidance is "test with small amounts" —
   i.e., test in production with real money. For an API explicitly marketed to autonomous agents,
   the absence of a dry-run flag on `swap` is the single biggest product gap.
