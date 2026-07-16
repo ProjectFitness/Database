@@ -53,3 +53,17 @@ precede the price move. Delivery via Routine → push/email digest.
 File issues on GMGNAI/gmgn-skills for the review's C1 (agent-readable docs / llms.txt), C2
 (`GMGN_SIGNING_KEY` naming), and C4 (dry-run flag on swap). Active repo, early ecosystem —
 becoming a known early integrator has outsized returns if this project grows.
+
+## 7. Ghost Wallet Miner (untagged smart money discovery)
+GMGN's KOL/Smart Money tags are public knowledge — the edge is wallets that behave like smart
+money *before* anyone tags them. Two modes, same primitives (`token traders` → `portfolio stats`
+batch scoring → `portfolio activity` timestamps → `track follow-wallet`):
+- **Targeted triangulation:** given a corpus of tokens a known operator was involved in + signal
+  timestamps (Telegram/Twitter), intersect early-buyer sets across the corpus and keep wallets
+  whose buys precede the signals. Identity doesn't matter — predictiveness does; wallet clusters
+  count as one entity.
+- **Proactive cohort mining:** nightly, pull top traders of the day's winners, keep
+  early+profitable+untagged wallets, and score *recurrence* across winners over rolling windows.
+  Recurrence is the signal; decay scores over time. Sharpest on Robinhood chain, where GMGN
+  tagging doesn't exist yet and everyone is equally blind.
+Feeds: Flight Recorder (#1) stores the tape; OpenTwitter CA events timestamp the signals.
