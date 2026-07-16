@@ -1,0 +1,23 @@
+# Credentials — never commit
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+gmgn_private*
+gmgn_public*
+
+# Local config
+.config/
+
+# Node
+node_modules/
+npm-debug.log*
+
+# Python
+__pycache__/
+.venv/
+
+# OS / editor
+.DS_Store
+*.swp

@@ -1,0 +1,24 @@
+{
+  "$comment": "Hard limits for any future trading wrapper around gmgn-cli swap/cooking. These are enforced in code before a request is signed — never rely on prompt instructions for safety. Copy to guardrails.json (gitignored) and tune per docs/DECISIONS.md.",
+  "mode": "paper",
+  "modes_allowed": ["paper", "confirm-each-trade", "live"],
+  "chains_allowed": ["sol"],
+  "max_trade_usd": 25,
+  "max_daily_spend_usd": 100,
+  "max_open_positions": 3,
+  "max_slippage_percent": 2.0,
+  "require_exit_strategy": true,
+  "token_denylist": [],
+  "token_min_safety": {
+    "require_security_check": true,
+    "max_rug_risk_score": 30,
+    "min_holder_count": 200,
+    "reject_honeypot": true
+  },
+  "human_confirmation": {
+    "required": true,
+    "channel": "cli-prompt",
+    "timeout_behavior": "cancel"
+  },
+  "kill_switch_file": "~/.config/gmgn/HALT"
+}
