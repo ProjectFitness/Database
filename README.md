@@ -46,5 +46,11 @@ memecoin market data and on-chain trading across Solana, BSC, Base, and Ethereum
 ## Known environment constraints
 
 - GMGN OpenAPI is **IPv4 only**.
+- **Restricted-egress runners need an allowlist entry:** the API lives at `openapi.gmgn.ai`
+  (key creation at `gmgn.ai`). Claude Code web sessions with a limited network policy will get
+  proxy 403s on every call until both domains are added to the environment's allowed domains.
+- **API keys are cryptographically bound to one key pair.** `gmgn-cli config --apply` fails with
+  "does not match your local key pair" if the key was minted against a public key generated on a
+  different machine. Key pair and API key must be created as a pair, on the machine that will use them.
 - The docs site (docs.gmgn.ai) blocks non-browser clients — see the review doc for why that matters.
 - Demo key `gmgn_solbscbaseethmonadtron` is public, shared, and read-only; fine for smoke tests, not for anything rate-sensitive.
