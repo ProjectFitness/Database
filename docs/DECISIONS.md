@@ -7,7 +7,7 @@ structured so everything above the line works before any of these are resolved.
 > **ACTION REQUIRED — current owner queue:**
 > - [ ] **#1** Create your API key: run `./scripts/setup.sh`, upload the printed public key at https://gmgn.ai/ai
 > - [ ] **#2** Decide the trading wallet + funding amount (recommend: fresh wallet, loss-tolerable amount)
-> - [ ] **#3** Choose trading posture: (a) read-only / (b) confirm-each-trade *(recommended)* / (c) autonomous-with-guardrails
+> - [x] **#3** ~~Choose trading posture~~ **DECIDED 2026-07-16: no autotrading.** Read-only data/intelligence platform; any future trade is manually placed by the owner. API key stays Trading Disabled server-side; no signing key gets configured anywhere.
 > - [ ] **#4** Set the numbers in `config/guardrails.json` (copy from the example; every value needs your sign-off)
 > - [ ] **#6** Pick the lead build direction (recommend: Flight Recorder, IDEAS.md #1)
 >
