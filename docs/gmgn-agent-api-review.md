@@ -84,9 +84,12 @@ uploaded at https://gmgn.ai/ai to mint an API key; the private half signs reques
 
 ### Minor
 
-- **C10. Chain support matrix is inconsistent** across docs: "Robinhood" appears in the demo key
-  and chain lists but is excluded from trading and Smart Money tracking; Monad/Tron appear in the
-  demo key string but not the docs. The support matrix needs one authoritative table.
+- **C10. Chain support matrix is inconsistent** across docs — and the CLI is ahead of the README.
+  Verified against gmgn-cli v1.5.2 source (2026-07-16): `robinhood` is accepted as an EVM chain by
+  market/token/portfolio/gas-price **and swap/multi-swap/order** commands, while the README still
+  says trading is sol/bsc/base/eth only. Only `track kol` and `track smartmoney` hard-reject it.
+  `monad` support exists commented-out in the validator (staged, not live); Monad/Tron also appear
+  in the demo key string. The support matrix needs one authoritative, versioned table.
 - **C11. "MCP architecture" is marketing-loose.** Coverage describes it as MCP-based, but the repo
   ships a CLI with per-editor plugin folders, not an MCP server. Works fine, but integrators
   expecting `mcp.json`-style wiring will be confused.
