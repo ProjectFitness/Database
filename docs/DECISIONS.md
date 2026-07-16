@@ -3,6 +3,17 @@
 Things Claude cannot or should not decide alone. Each has a recommendation; the project is
 structured so everything above the line works before any of these are resolved.
 
+> [!WARNING]
+> **ACTION REQUIRED — current owner queue:**
+> - [ ] **#1** Create your API key: run `./scripts/setup.sh`, upload the printed public key at https://gmgn.ai/ai
+> - [ ] **#2** Decide the trading wallet + funding amount (recommend: fresh wallet, loss-tolerable amount)
+> - [ ] **#3** Choose trading posture: (a) read-only / (b) confirm-each-trade *(recommended)* / (c) autonomous-with-guardrails
+> - [ ] **#4** Set the numbers in `config/guardrails.json` (copy from the example; every value needs your sign-off)
+> - [ ] **#6** Pick the lead build direction (recommend: Flight Recorder, IDEAS.md #1)
+>
+> Check items off here (or just tell Claude your answers) — this list is the single source of truth
+> for what's blocked on you.
+
 ## Blocking (needed before first real API call beyond the demo key)
 
 ### 1. GMGN account + API key creation — *only you can do this*

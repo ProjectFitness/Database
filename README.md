@@ -14,20 +14,25 @@ memecoin market data and on-chain trading across Solana, BSC, Base, and Ethereum
 | `docs/DECISIONS.md` | Decisions only the project owner can make — read this first |
 | `docs/IDEAS.md` | Product/architecture ideas for building on top of the API |
 
+> [!IMPORTANT]
+> **Convention:** anything in this project that requires the owner's hands or a decision is
+> flagged with an `ACTION REQUIRED` callout like the one below. If it isn't flagged, it's
+> automated or already handled.
+
 ## Quickstart
 
-```bash
-./scripts/setup.sh          # generates keys, configures ~/.config/gmgn/.env, verifies with demo key
-```
-
-Then create your personal API key at **https://gmgn.ai/ai** by uploading the public key the script
-prints, and paste the key when prompted (or add it to `~/.config/gmgn/.env` later).
-
-Verify:
-
-```bash
-gmgn-cli market trending --chain sol --interval 1h --limit 3
-```
+> [!WARNING]
+> **ACTION REQUIRED — do these 3 steps in order (~5 minutes):**
+> 1. Run `./scripts/setup.sh` — it checks prerequisites, generates your Ed25519 keypair, and
+>    prints your **public key**.
+> 2. Log in at **https://gmgn.ai/ai**, upload that public key, and copy the API key it issues.
+> 3. Paste the key when the script prompts (or add `GMGN_API_KEY=...` to `~/.config/gmgn/.env`),
+>    then verify with:
+>    ```bash
+>    gmgn-cli market trending --chain sol --interval 1h --limit 3
+>    ```
+>
+> Until step 2, the script falls back to the shared read-only demo key — fine for smoke tests only.
 
 ## Ground rules (non-negotiable until revisited in docs/DECISIONS.md)
 
