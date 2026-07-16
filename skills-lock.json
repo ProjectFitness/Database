@@ -1,0 +1,11 @@
+{
+  "version": 1,
+  "skills": {
+    "opentwitter": {
+      "source": "6551Team/opentwitter-mcp",
+      "sourceType": "github",
+      "skillPath": "openclaw-skill/opentwitter/SKILL.md",
+      "computedHash": "a7de53ece863f1e2f7b2ae6a3e818752d07b7b0266a38143dcd28e2dc854ee4f"
+    }
+  }
+}
