@@ -1,0 +1,12 @@
+{
+  "$comment": "Copy to watchlist.json (gitignored — never commit real entries; this repo is public). Seeds for portfolio baselining, tweet-signal correlation, and the Ghost Wallet Miner.",
+  "my_wallets": [
+    { "address": "0x0000000000000000000000000000000000000000", "chains": ["base", "bsc", "eth", "robinhood"], "label": "main" }
+  ],
+  "x_accounts_watched": [
+    { "handle": "example_handle", "why": "CTO leader / signal source", "watch": { "newTweetBol": true, "newCaBol": true, "updateDescBol": true } }
+  ],
+  "signal_corpus": [
+    { "token_address": "", "chain": "", "signal_source": "telegram|twitter", "signal_time_utc": "", "notes": "known call for triangulation" }
+  ]
+}

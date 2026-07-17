@@ -9,6 +9,8 @@ gmgn_public*
 
 # Local config
 .config/
+config/watchlist.json
+config/guardrails.json
 
 # Node
 node_modules/
