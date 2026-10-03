@@ -1,0 +1,35 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 1000" width="1000" height="1000">
+  <defs>
+    <radialGradient id="bg" cx="50%" cy="45%" r="65%">
+      <stop offset="0%" stop-color="#FFE3EC"/>
+      <stop offset="100%" stop-color="#F7A8C4"/>
+    </radialGradient>
+  </defs>
+  <rect width="1000" height="1000" fill="url(#bg)"/>
+  <!-- ears -->
+  <path d="M250 330 Q190 180 330 210 Q360 270 340 340 Z" fill="#8A7F86"/>
+  <path d="M750 330 Q810 180 670 210 Q640 270 660 340 Z" fill="#8A7F86"/>
+  <path d="M270 310 Q235 220 320 235 Q335 275 325 320 Z" fill="#E7A9B9"/>
+  <path d="M730 310 Q765 220 680 235 Q665 275 675 320 Z" fill="#E7A9B9"/>
+  <!-- head (wide, blocky, pittie) -->
+  <path d="M500 230 C700 230 790 330 790 500 C790 680 680 790 500 790 C320 790 210 680 210 500 C210 330 300 230 500 230 Z" fill="#A79CA3"/>
+  <!-- white blaze + muzzle -->
+  <path d="M470 250 Q500 240 530 250 L560 520 Q500 540 440 520 Z" fill="#FFFFFF"/>
+  <ellipse cx="500" cy="620" rx="210" ry="150" fill="#FFFFFF"/>
+  <!-- eyes, happy squint -->
+  <path d="M345 470 Q390 425 435 470" stroke="#2B2230" stroke-width="22" fill="none" stroke-linecap="round"/>
+  <path d="M565 470 Q610 425 655 470" stroke="#2B2230" stroke-width="22" fill="none" stroke-linecap="round"/>
+  <!-- blush -->
+  <ellipse cx="335" cy="560" rx="45" ry="26" fill="#F48FB1" opacity="0.7"/>
+  <ellipse cx="665" cy="560" rx="45" ry="26" fill="#F48FB1" opacity="0.7"/>
+  <!-- nose -->
+  <path d="M440 560 Q500 535 560 560 Q560 610 500 620 Q440 610 440 560 Z" fill="#2B2230"/>
+  <ellipse cx="478" cy="565" rx="14" ry="8" fill="#FFFFFF" opacity="0.6"/>
+  <!-- big pittie smile -->
+  <path d="M500 620 L500 650" stroke="#2B2230" stroke-width="14" stroke-linecap="round"/>
+  <path d="M380 640 Q500 760 620 640" stroke="#2B2230" stroke-width="16" fill="#3A2A33" stroke-linejoin="round"/>
+  <path d="M455 700 Q500 760 545 700 Q500 720 455 700 Z" fill="#FF7A9C"/>
+  <!-- heart tag -->
+  <path d="M500 860 C470 820 420 840 430 880 C440 915 500 945 500 945 C500 945 560 915 570 880 C580 840 530 820 500 860 Z" fill="#E91E63"/>
+  <text x="500" y="905" font-family="Arial Rounded MT Bold, Arial, sans-serif" font-size="34" font-weight="700" fill="#FFFFFF" text-anchor="middle">V</text>
+</svg>
